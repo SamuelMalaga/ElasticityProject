@@ -19,13 +19,10 @@ class ElasticityTheory:
         C: array
             (6x6) numpy array, stiffness matrix based on the given constants and material crystal class
         S: array
-            (6x6) numpy array | compliance matrix based on the given constants and material crystal class
-        St:
-            (3x3x3x3) numpy array | compliance tensor based on the given constants and material crystal class
+            (6x6) numpy array, compliance matrix based on the given constants and material crystal class
+        St: array
+            (3x3x3x3) numpy array, compliance tensor based on the given constants and material crystal class
 
-        Example:
-        ----------
-        CsNiF3 =  ElasticityTheory('tetragonal_1', 29.10, -13.10, -1.81, 11.00, 213.00, 84.00)
 
 
     '''
@@ -51,8 +48,6 @@ class ElasticityTheory:
     def StiffnessMatrix(self, crystal_class, *stiff_consts):
         '''
         Generates the stiffness matrix based on the given crystal class and independent elastic constants based on voigt notation
-
-        Generates the compliance matrix, compliance tensor and stiffness matrix based on the given inputs. Each crystal class have a specific number of constants to be given
 
         Parameters
         ----------
@@ -216,7 +211,7 @@ class ElasticityTheory:
         Returns
         ----------
         S: array
-            (6x6) numpy array | compliance matrix based on the given constants and material crystal class
+            (6x6) numpy array, compliance matrix based on the given constants and material crystal class
         '''
 
         return la.inv(C)
@@ -236,7 +231,7 @@ class ElasticityTheory:
         Returns
         ----------
         St: array
-            (3x3x3x3) numpy array | compliance tensor based on the given constants and material crystal class
+            (3x3x3x3) numpy array, compliance tensor based on the given constants and material crystal class
         '''
 
 
@@ -267,7 +262,8 @@ class ElasticityTheory:
 class DirectionalProperties(ElasticityTheory):
 
     '''
-    Generates the object that calculate directional properties based on the given input properties
+        Generates the object that calculate directional properties based on the given input properties
+
         Parameters
         ----------
         crystal_class: str
@@ -278,32 +274,22 @@ class DirectionalProperties(ElasticityTheory):
 
         Returns
         ----------
-        B | (NxN) np array | Linear compressibility for each direction l
-        E | (NxN) np array | Young Modulus for each direction l
-        G | (NxNxN) np array | Shear Modulus for l and n directions
-        p | (NxNxN) np array | Poisson's Ration for l and n directions
+        B:  array
+            (NxN) np array, Linear compressibility for each direction l
+        E: array
+            (NxN) np array, Young Modulus for each direction l
+        G: array
+            (NxNxN) np array | Shear Modulus for l and n directions
+        p: array
+            (NxNxN) np array | Poisson's Ration for l and n directions
         *N is the number of points specified in the l direction
 
-        Example:
-        ----------
-        #For l dependant functions
-        DirProp = DirectionalProperties('hexagonal', 246.73, 126.66, 104.6,241.26, 58.48 )
-        theta, phi = np.mgrid[0:np.pi:100, 0:2*np.pi:100]
-        ldir = np.array([np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)])
-        DirProp.LinearCompressibility(ldir)
-        #For l,n dependant functions
-        n_dir_theta, n_dir_phi, n_dir_psi = np.mgrid[0:np.pi:int(100) * 1j, 0:2*np.pi:int(100) * 1j, 0:2*np.pi:int(100) * 1j]
-        ndir  = np.array([
-                    np.sin(n_dir_phi) * np.sin(0)- np.cos(n_dir_theta)*np.cos(n_dir_phi)*np.cos(0),
-                    -np.cos(n_dir_phi)*np.sin(0) - np.cos(n_dir_phi)*np.sin(n_dir_phi)*np.cos(0),
-                    np.sin(n_dir_phi)*np.cos(0)
-                ])
-        DirProp.ShearModulus(ldir,ndir)
     '''
 
     def LinearCompressibility(self, l):
         '''
             Generates the material linear compressibility matrix based on the l direction input
+
             Parameters
             ----------
             l: array
@@ -312,15 +298,7 @@ class DirectionalProperties(ElasticityTheory):
             Returns
             ----------
             B: array
-                (NxN) np array | Linear compressibility for each direction l
-
-            Example:
-            ----------
-            DirProp = DirectionalProperties('hexagonal', 246.73, 126.66, 104.6,241.26, 58.48 )
-            #N=100
-            theta, phi = np.mgrid[0:np.pi:100, 0:2*np.pi:100]
-            ldir = np.array([np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)])
-            DirProp.LinearCompressibility(ldir)
+                (NxN) np array, Linear compressibility for each direction l
         '''
 
         B = 0.
@@ -333,6 +311,7 @@ class DirectionalProperties(ElasticityTheory):
     def YoungModulus(self, l):
         '''
             Generates the material young modulus matrix based on the l direction input
+
             Parameters
             ----------
             l: array
@@ -341,15 +320,7 @@ class DirectionalProperties(ElasticityTheory):
             Returns
             ----------
             E: array
-                (NxN) np array | Linear compressibility for each direction l
-
-            Example:
-            ----------
-            DirProp = DirectionalProperties('hexagonal', 246.73, 126.66, 104.6,241.26, 58.48 )
-            #N=100
-            theta, phi = np.mgrid[0:np.pi:100, 0:2*np.pi:100]
-            ldir = np.array([np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)])
-            DirProp.LinearCompressibility(ldir)
+                (NxN) np array, Linear compressibility for each direction l
         '''
         E = 0.
         for i in range(3):
@@ -362,6 +333,7 @@ class DirectionalProperties(ElasticityTheory):
     def ShearModulus(self, l, n):
         '''
             Generates the material shear modulus matrix based on the l direction input
+
             Parameters
             ----------
             l: array
@@ -372,23 +344,8 @@ class DirectionalProperties(ElasticityTheory):
             Returns
             ----------
             G: array
-                (NxNxN) np array | Linear compressibility for each direction l and normal direction n
+                (NxNxN) np array, Linear compressibility for each direction l and normal direction n
 
-
-            Example:
-            ----------
-            DirProp = DirectionalProperties('hexagonal', 246.73, 126.66, 104.6,241.26, 58.48 )
-            theta, phi = np.mgrid[0:np.pi:int(100)*1j, 0:2*np.pi:int(100)*1j]
-            ldir = np.array([np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)])
-            n_dir_theta, n_dir_phi, n_dir_psi = np.mgrid[0:np.pi:int(100) * 1j, 0:2*np.pi:int(100) * 1j, 0:2*np.pi:int(100)* 1j]
-            *N is the number of points specified in the l direction
-            *The psi angle in ndir must be fixated to generate a plottable image
-            ndir  = np.array([
-                    np.sin(n_dir_phi) * np.sin(0)- np.cos(n_dir_theta)*np.cos(n_dir_phi)*np.cos(0),
-                    -np.cos(n_dir_phi)*np.sin(0) - np.cos(n_dir_phi)*np.sin(n_dir_phi)*np.cos(0),
-                    np.sin(n_dir_phi)*np.cos(0)
-                ])
-            DirProp.ShearModulus(ldir,ndir)
         '''
 
         G = 0.
@@ -402,6 +359,7 @@ class DirectionalProperties(ElasticityTheory):
     def PoissonRatio(self, l, n):
         '''
             Generates the material Poisson Ratio matrix based on the l direction input
+
             Parameters
             ----------
             l: array
@@ -412,23 +370,8 @@ class DirectionalProperties(ElasticityTheory):
             Returns
             ----------
             PoissonRatio: array
-                (NxNxN) np array | Linear compressibility for each direction l and normal direction n
+                (NxNxN) np array, Linear compressibility for each direction l and normal direction n
 
-
-            Example:
-            ----------
-            DirProp = DirectionalProperties('hexagonal', 246.73, 126.66, 104.6,241.26, 58.48 )
-            theta, phi = np.mgrid[0:np.pi:int(100)*1j, 0:2*np.pi:int(100)*1j]
-            ldir = np.array([np.sin(theta) * np.cos(phi), np.sin(theta) * np.sin(phi), np.cos(theta)])
-            n_dir_theta, n_dir_phi, n_dir_psi = np.mgrid[0:np.pi:int(100) * 1j, 0:2*np.pi:int(100) * 1j, 0:2*np.pi:int(100)* 1j]
-            *N is the number of points specified in the l direction
-            *The psi angle in ndir must be fixated to generate a plottable image
-            ndir  = np.array([
-                    np.sin(n_dir_phi) * np.sin(0)- np.cos(n_dir_theta)*np.cos(n_dir_phi)*np.cos(0),
-                    -np.cos(n_dir_phi)*np.sin(0) - np.cos(n_dir_phi)*np.sin(n_dir_phi)*np.cos(0),
-                    np.sin(n_dir_phi)*np.cos(0)
-                ])
-            DirProp.PoissonRatio(ldir,ndir)
         '''
 
         p = 0.
@@ -474,9 +417,6 @@ class VRH(ElasticityTheory):
         PoissonRatio: int
             VRH approximation of Poisson Ratio using data from the three approximations
 
-        Example:
-        ----------
-        VRHProp = VRH('hexagonal', 246.73, 126.66, 104.6,241.26, 58.48 )
     '''
 
     def Reuss(self):
@@ -514,10 +454,14 @@ class VRH(ElasticityTheory):
 
 
 class DebyeGruneisen(VRH):
-
+    '''
+    Class under development
+    '''
     pass
 
 
 class Elasticity(DirectionalProperties, VRH):
-
+    '''
+    Class under development
+    '''
     pass
